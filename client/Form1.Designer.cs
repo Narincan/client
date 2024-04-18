@@ -40,6 +40,9 @@
             this.RockButton = new System.Windows.Forms.Button();
             this.PaperButton = new System.Windows.Forms.Button();
             this.ScissorButton = new System.Windows.Forms.Button();
+            this.userListBox = new System.Windows.Forms.ListBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -151,11 +154,43 @@
             this.ScissorButton.UseVisualStyleBackColor = true;
             this.ScissorButton.Click += new System.EventHandler(this.ScissorButton_Click);
             // 
+            // userListBox
+            // 
+            this.userListBox.FormattingEnabled = true;
+            this.userListBox.ItemHeight = 25;
+            this.userListBox.Location = new System.Drawing.Point(971, 158);
+            this.userListBox.Name = "userListBox";
+            this.userListBox.Size = new System.Drawing.Size(204, 404);
+            this.userListBox.TabIndex = 12;
+            this.userListBox.SelectedIndexChanged += new System.EventHandler(this.userListBox_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(1022, 117);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(97, 25);
+            this.label4.TabIndex = 13;
+            this.label4.Text = "User List";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(501, 56);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(48, 25);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "Log";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 689);
+            this.ClientSize = new System.Drawing.Size(1312, 689);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.userListBox);
             this.Controls.Add(this.ScissorButton);
             this.Controls.Add(this.PaperButton);
             this.Controls.Add(this.RockButton);
@@ -189,6 +224,9 @@
         private System.Windows.Forms.Button RockButton;
         private System.Windows.Forms.Button PaperButton;
         private System.Windows.Forms.Button ScissorButton;
+        private System.Windows.Forms.ListBox userListBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }
 
