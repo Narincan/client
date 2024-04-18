@@ -61,35 +61,46 @@ namespace client
 
         private void Receive()
         {
-            while(connected)
+            while (connected)
             {
                 try
                 {
-                    Byte[] buffer = new Byte[64];
-                    clientSocket.Receive(buffer);
-
-                    string incomingMessage = Encoding.Default.GetString(buffer);
-                    incomingMessage = incomingMessage.Substring(0, incomingMessage.IndexOf("\0"));
-
-                    logs.AppendText(incomingMessage + "\n");
-                    
+                    Byte[] buffer = new Byte[1024];
+                    int bytesReceived = clientSocket.Receive(buffer);
+                    if (bytesReceived > 0)
+                    {
+                        string incomingMessage = Encoding.Default.GetString(buffer, 0, bytesReceived);
+                        ProcessReceivedMessage(incomingMessage);
+                    }
+                    else
+                    {
+                        throw new SocketException();
+                    }
                 }
-                catch
+                catch (SocketException)
                 {
                     if (!terminating)
                     {
-                        logs.AppendText("The server has disconnected\n");
-                        button_connect.Enabled = true;
-                        textBox_message.Enabled = false;
-                        button_send.Enabled = false;
+                        logs.Invoke(new MethodInvoker(delegate { logs.AppendText("The server has disconnected.\n"); }));
+                        ResetConnectionControls();
                     }
 
                     clientSocket.Close();
                     connected = false;
+                    break;
                 }
-
             }
         }
+
+        private void ResetConnectionControls()
+        {
+            // Reset the UI controls to enable reconnection
+            button_connect.Invoke(new MethodInvoker(delegate { button_connect.Enabled = true; }));
+            textBox_message.Invoke(new MethodInvoker(delegate { textBox_message.Enabled = false; }));
+            button_send.Invoke(new MethodInvoker(delegate { button_send.Enabled = false; }));
+        }
+
+
 
         private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -100,15 +111,15 @@ namespace client
 
         private void button_send_Click(object sender, EventArgs e)
         {
-            string message = "Client: " + textBox_message.Text;
-
-            if(message != "" && message.Length <= 64)
+            string username = textBox_message.Text.Trim();  // Assuming textBox_message is where the username is entered
+            if (!string.IsNullOrEmpty(username) && username.Length <= 64)
             {
+                string message = "NAME:" + username;  // Format the message as expected by the server
                 Byte[] buffer = Encoding.Default.GetBytes(message);
                 clientSocket.Send(buffer);
             }
-
         }
+
 
         private void label3_Click(object sender, EventArgs e)
         {
@@ -117,21 +128,84 @@ namespace client
 
         private void RockButton_Click(object sender, EventArgs e)
         {
-
+            SendMove("ROCK");
         }
-
 
         private void PaperButton_Click(object sender, EventArgs e)
         {
-
+            SendMove("PAPER");
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void ScissorButton_Click(object sender, EventArgs e)
+        {
+            SendMove("SCISSORS");
+        }
+
+        private void SendMove(string move)
+        {
+            if (connected)
+            {
+                string message = "MOVE:" + move;
+                Byte[] buffer = Encoding.Default.GetBytes(message);
+                clientSocket.Send(buffer);
+            }
+            else
+            {
+                logs.AppendText("Not connected to the server.\n");
+            }
+        }
+
+        private void ProcessReceivedMessage(string message)
+        {
+            if (message.StartsWith("USERS:"))
+            {
+                string[] users = message.Substring(6).Split(',');
+                userListBox.Invoke(new MethodInvoker(delegate
+                {
+                    userListBox.Items.Clear();
+                    foreach (var user in users)
+                    {
+                        userListBox.Items.Add(user);
+                    }
+                }));
+            }
+            else if (message.StartsWith("Welcome to Rock-Paper-Scissors,"))
+            {
+                logs.Invoke(new MethodInvoker(delegate
+                {
+                    logs.AppendText(message + "\n");
+                }));
+            }
+            else if (message.StartsWith("Game is starting in") || message.StartsWith("Game started!"))
+            {
+                logs.Invoke(new MethodInvoker(delegate
+                {
+                    logs.AppendText(message + "\n");
+                }));
+            }
+            else if (message.StartsWith("ERROR:"))
+            {
+                logs.Invoke(new MethodInvoker(delegate
+                {
+                    logs.AppendText(message + "\n");
+                }));
+            }
+            else
+            {
+                logs.Invoke(new MethodInvoker(delegate
+                {
+                    logs.AppendText("Received message: " + message + "\n");
+                }));
+            }
+        }
+
+
+        private void userListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
 
-        private void ScissorButton_Click(object sender, EventArgs e)
+        private void label4_Click(object sender, EventArgs e)
         {
 
         }
