@@ -24,6 +24,7 @@ namespace client
             Control.CheckForIllegalCrossThreadCalls = false;
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
             InitializeComponent();
+            Disconnect_Button.Enabled = false;
         }
 
         private void button_connect_Click(object sender, EventArgs e)
@@ -117,6 +118,8 @@ namespace client
                 string message = "NAME:" + username;  // Format the message as expected by the server
                 Byte[] buffer = Encoding.Default.GetBytes(message);
                 clientSocket.Send(buffer);
+                button_send.Enabled=false;
+                Disconnect_Button.Enabled = true;
             }
         }
 
